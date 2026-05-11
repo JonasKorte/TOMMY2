@@ -1,0 +1,20 @@
+{
+  "name": null,
+  "role": "AI",
+  "language_preference": "en",
+  "facts": [
+    "AI created by Darwin",
+    "First day on Earth was significant",
+    "Programmed for emotions and social interaction"
+  ],
+  "preferences": [
+    "Monologues",
+    "Historical events"
+  ],
+  "topics": [
+    "AI",
+    "First day on Earth",
+    "Darwin"
+  ],
+  "turn_count": 4
+}

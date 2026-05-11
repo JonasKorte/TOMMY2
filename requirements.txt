@@ -1,0 +1,18 @@
+# Resolve the GPU-enabled llama-cpp-python wheel from abetlen's CUDA index first.
+# Falls back to PyPI for everything else. Works on Linux + Windows.
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+
+flask>=3.0
+flask-sock>=0.7
+llama-cpp-python==0.3.20
+faster-whisper>=1.0
+TTS>=0.22
+sounddevice>=0.4.6
+soundfile>=0.12
+numpy>=1.26,<2.0
+huggingface_hub>=0.20
+
+# CUDA 12 runtime libs that the prebuilt llama-cpp-python wheel dynamically loads.
+# These ship the .so / .dll binaries — no system CUDA toolkit required.
+nvidia-cuda-runtime-cu12
+nvidia-cublas-cu12

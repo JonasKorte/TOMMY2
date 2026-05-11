@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOMMY2</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>TOMMY2</h1>
+    <div class="header-right">
+      <button id="lang-toggle" title="Switch language">NL</button>
+      <div id="status-dot" title="Ready"></div>
+    </div>
+  </header>
+
+  <div id="chat"></div>
+
+  <div id="status-bar"></div>
+
+  <div id="rms-meter" hidden>
+    <div id="rms-bar">
+      <div id="rms-fill"></div>
+      <div id="rms-mark-open"  class="rms-mark"></div>
+      <div id="rms-mark-close" class="rms-mark"></div>
+    </div>
+    <span id="rms-value">0.000</span>
+  </div>
+
+  <div id="input-row">
+    <button id="mic-btn" title="Hold to record (click to toggle)">🎤</button>
+    <input
+      id="text-input"
+      type="text"
+      placeholder="Type a message or use the mic…"
+      autocomplete="off"
+    />
+    <button id="send-btn" title="Send">➤</button>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

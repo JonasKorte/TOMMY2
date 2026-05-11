@@ -1,0 +1,35 @@
+TOMMY2 — Quick Start (Windows)
+================================
+
+REQUIREMENTS
+  - Windows 10 or 11
+  - Python 3.11 or 3.12  (https://www.python.org/downloads/)
+        IMPORTANT: tick "Add Python to PATH" during installation.
+  - NVIDIA GPU with current driver (any 525+ driver)
+        The app runs on CPU as a fallback if no GPU is present.
+
+FIRST RUN
+  1. Unzip this package anywhere (avoid OneDrive / synced folders).
+  2. Double-click  run.bat
+  3. The first launch will:
+        - create a Python virtual environment
+        - install dependencies (~3-5 minutes)
+        - download AI models (~6 GB, one-time, ~10-20 minutes)
+     Keep the window open and connected to the internet.
+  4. When you see "TOMMY2 starting on http://localhost:5000",
+     open that URL in your browser.
+
+EVERY RUN AFTER THE FIRST
+  - Double-click  run.bat
+  - It boots in a few seconds. No internet required.
+
+STOPPING
+  - Close the console window, or press Ctrl+C in it.
+
+TROUBLESHOOTING
+  - "Python is not installed or not on PATH" → reinstall Python and
+    tick "Add Python to PATH".
+  - GPU not used → run `nvidia-smi` in a terminal; if no GPU is
+    listed, install/update the NVIDIA driver.
+  - Models failed to download → re-run run.bat; the script resumes
+    where it left off.
