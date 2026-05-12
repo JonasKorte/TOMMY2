@@ -1,16 +1,32 @@
-from TTS.api import TTS
-from backend.config import TTS_NL_MODEL, TTS_EN_MODEL
+from backend.config import TTS_EN_ENGINE, TTS_NL_ENGINE
+from backend.tts.base import TTSProvider
+from backend.tts.coqui import CoquiProvider
+from backend.tts.piper import PiperProvider
+
+_PROVIDER_CLASSES = {
+    "coqui": CoquiProvider,
+    "piper": PiperProvider,
+}
 
 
 class TTSEngine:
     def __init__(self):
-        self._engines: dict[str, TTS] = {}
+        self._providers: dict[str, TTSProvider] = {}
 
-    def _load(self, lang: str):
-        model_name = TTS_NL_MODEL if lang == "nl" else TTS_EN_MODEL
-        self._engines[lang] = TTS(model_name, progress_bar=False, gpu=False)
+    def _engine_name(self, lang: str) -> str:
+        name = TTS_NL_ENGINE if lang == "nl" else TTS_EN_ENGINE
+        if name not in _PROVIDER_CLASSES:
+            raise ValueError(
+                f"Unknown TTS engine {name!r} for lang={lang!r}. "
+                f"Valid options: {sorted(_PROVIDER_CLASSES)}"
+            )
+        return name
+
+    def _get_provider(self, lang: str) -> TTSProvider:
+        name = self._engine_name(lang)
+        if name not in self._providers:
+            self._providers[name] = _PROVIDER_CLASSES[name]()
+        return self._providers[name]
 
     def synthesize(self, text: str, lang: str, output_path: str):
-        if lang not in self._engines:
-            self._load(lang)
-        self._engines[lang].tts_to_file(text=text, file_path=output_path)
+        self._get_provider(lang).synthesize(text, lang, output_path)

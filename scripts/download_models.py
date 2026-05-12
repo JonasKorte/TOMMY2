@@ -8,7 +8,18 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT))
 
-from backend.config import MODELS_DIR, LLM_MODEL_PATH, STT_MODEL_DIR
+from backend.config import (
+    LLM_MODEL_PATH,
+    MODELS_DIR,
+    STT_MODEL_DIR,
+    TTS_EN_ENGINE,
+    TTS_EN_MODEL,
+    TTS_NL_ENGINE,
+    TTS_NL_MODEL,
+    TTS_PIPER_DIR,
+    TTS_PIPER_EN_VOICE,
+    TTS_PIPER_NL_VOICE,
+)
 
 LLM_DIR = MODELS_DIR / "llm"
 STT_DIR = Path(STT_MODEL_DIR)
@@ -45,12 +56,30 @@ def download_stt():
     print("[STT] Done.")
 
 
-def download_tts():
+def _download_coqui(model_id: str):
     from TTS.api import TTS
-    print("[TTS] Downloading Dutch voice model (nl/mai/tacotron2-DDC)...")
-    TTS("tts_models/nl/mai/tacotron2-DDC", progress_bar=True)
-    print("[TTS] Downloading English voice model (en/ljspeech/tacotron2-DDC)...")
-    TTS("tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True)
+    print(f"[TTS] Downloading Coqui model ({model_id})...")
+    TTS(model_id, progress_bar=True)
+
+
+def _download_piper(voice_id: str):
+    from backend.tts.piper import _ensure_voice
+    print(f"[TTS] Downloading Piper voice ({voice_id})...")
+    _ensure_voice(voice_id, TTS_PIPER_DIR / voice_id)
+
+
+def download_tts():
+    # Only fetch what the active engine config actually needs.
+    for lang, engine, coqui_model, piper_voice in (
+        ("nl", TTS_NL_ENGINE, TTS_NL_MODEL, TTS_PIPER_NL_VOICE),
+        ("en", TTS_EN_ENGINE, TTS_EN_MODEL, TTS_PIPER_EN_VOICE),
+    ):
+        if engine == "piper":
+            _download_piper(piper_voice)
+        elif engine == "coqui":
+            _download_coqui(coqui_model)
+        else:
+            print(f"[TTS] Unknown engine {engine!r} for {lang}; skipping.")
     print("[TTS] Done.")
 
 
