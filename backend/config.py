@@ -36,7 +36,10 @@ TTS_PIPER_NL_VOICE = os.getenv("TTS_PIPER_NL_VOICE", "nl_NL-mls-medium")
 TTS_PIPER_EN_VOICE = os.getenv("TTS_PIPER_EN_VOICE", "en_US-lessac-medium")
 TTS_PIPER_DIR = MODELS_DIR / "tts" / "piper"
 
-LLM_CONTEXT_WINDOW = 4096
+# Mistral-7B-Instruct-v0.3 supports up to 32K. The personality + the embedded
+# Overzicht/Scene Script reaches ~7-8K tokens by itself; 16K leaves comfortable
+# room for few-shot, recent history, profile preamble, and a 512-token reply.
+LLM_CONTEXT_WINDOW = 16384
 LLM_N_THREADS = 8
 # Mistral-7B has 32 transformer layers + output. -1 offloads everything to GPU.
 # Falls back to CPU automatically if llama-cpp-python was built without CUDA.

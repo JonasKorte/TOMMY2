@@ -10,6 +10,7 @@ from backend.config import FLASK_HOST, FLASK_PORT, HISTORY_CONTEXT_TURNS, PROFIL
 from backend.language_state import LanguageState
 from backend.llm_engine import LLMEngine
 from backend.memory import Memory
+from backend.scene_state import SceneState
 from backend.stt_engine import STTEngine
 from backend.tts_engine import TTSEngine
 
@@ -23,6 +24,7 @@ llm = LLMEngine()
 stt = STTEngine()
 tts = TTSEngine()
 memory = Memory()
+scene = SceneState()
 
 
 @app.route("/")
@@ -106,9 +108,18 @@ def chat(ws):
     history = memory.recent_history(HISTORY_CONTEXT_TURNS)
     profile = memory.load_profile()
 
+    # Detect performance cues ("TOMMY KAPPEN", scene triggers, …) before the LLM
+    # sees the message, so the role/scene injected into the prompt is up to date.
+    trigger = scene.apply_trigger(user_message)
+    scene_snapshot = scene.snapshot()
+    if trigger:
+        print(f"[scene] trigger={trigger} → {scene_snapshot}", flush=True)
+
     full_response_parts: list[str] = []
     try:
-        for token in llm.stream_chat(history, user_message, lang=lang, profile=profile):
+        for token in llm.stream_chat(
+            history, user_message, lang=lang, profile=profile, scene_state=scene_snapshot
+        ):
             full_response_parts.append(token)
             ws.send(token)
         ws.send("[DONE]")
@@ -166,6 +177,22 @@ def synthesize():
 def reload_personality():
     llm.reload_personality()
     return jsonify({"status": "ok"})
+
+
+@app.route("/scene", methods=["GET"])
+def get_scene():
+    return jsonify(scene.snapshot())
+
+
+@app.route("/scene", methods=["POST"])
+def set_scene():
+    data = request.get_json(silent=True) or {}
+    if data.get("reset"):
+        return jsonify(scene.reset())
+    try:
+        return jsonify(scene.set(role=data.get("role"), scene=data.get("scene")))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":
